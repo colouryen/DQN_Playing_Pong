@@ -69,6 +69,7 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
     
     ######## YOUR CODE HERE! ########
     # TODO: Implement the Temporal Difference Loss
+    '''
     non_final_mask = Variable(torch.ByteTensor(np.uint8(tuple(map(lambda s: s is not None, next_state)))))
     #non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, next_state)), device=self.device, dtype=torch.uint8)
     try: #sometimes all next states are false
@@ -78,11 +79,12 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
     except:
         non_final_next_states = None
         empty_next_state_values = True
-    
+    '''
     current_q_value = model(state).gather(1, action.view(-1, 1))
-    #max_next_action = model(next_state).max(dim=1)[1].view(-1, 1)
-    #expected_q_value = reward + gamma * model(next_state).gather(1, max_next_action)
+    max_next_action = model(next_state).max(dim=1)[1].view(-1, 1)
+    expected_q_value = reward + gamma * model(next_state).gather(1, max_next_action) * (1 - done)
     
+    '''
     #target
     with torch.no_grad():
         max_next_q_value = Variable(torch.zeros(batch_size, dtype=torch.float)).unsqueeze(dim=1)
@@ -91,8 +93,8 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
             max_next_action = model(non_final_next_states).max(dim=1)[1].view(-1, 1)
             max_next_q_value[non_final_mask] = model(non_final_next_states).gather(1, max_next_action)
         expected_q_values = reward + (gamma * max_next_q_value)
-    
-    err = (expected_q_values - current_q_value)
+    '''
+    err = (expected_q_value - current_q_value)
     
     loss = 0.5 * err.pow(2)
     loss = loss.mean()
