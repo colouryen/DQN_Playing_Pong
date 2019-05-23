@@ -85,8 +85,8 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
         empty_next_state_values = True
     '''
     current_q_value = model(state).gather(1, action.view(-1, 1))
-    max_next_action = model(next_state).max(dim=1)[1].view(-1, 1)
-    expected_q_value = reward + (gamma * model(next_state).gather(1, max_next_action)) * (1 - done)
+    max_next_action = model(next_state) #.max(dim=1)[1].view(-1, 1)
+    expected_q_value = reward + (gamma * model(next_state).gather(1, max_next_action.view(-1, 1))) * (1 - done)
     
     '''
     #target
