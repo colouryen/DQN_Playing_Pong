@@ -12,6 +12,10 @@ import torch.nn.functional as F
 USE_CUDA = torch.cuda.is_available()
 from dqn import QLearner, compute_td_loss, ReplayBuffer
 
+import scipy.io as sio
+import os.path as op
+import matplotlib.pyplot as plt
+
 env_id = "PongNoFrameskip-v4"
 env = make_atari(env_id)
 env = wrap_deepmind(env)
@@ -69,3 +73,9 @@ for frame_idx in range(1, num_frames + 1):
     if frame_idx % 10000 == 0 and len(replay_buffer) > replay_initial:
         print('#Frame: %d, Loss: %f' % (frame_idx, np.mean(losses)))
         print('Last-10 average reward: %f' % np.mean(all_rewards[-10:]))
+    
+    
+    sio.savemat('Results.mat', {'all_rewards':all_rewards, 'losses': losses})
+    
+        
+      
