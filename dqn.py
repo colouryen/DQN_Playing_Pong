@@ -54,7 +54,7 @@ class QLearner(nn.Module):
             ######## YOUR CODE HERE! ########
             # TODO: Given state, you should write code to get the Q value and chosen action
             # Complete the R.H.S. of the following 2 lines and uncomment them
-            '''
+            
             q_value = self.forward(state)
             _, potential_action = torch.max(q_value, dim=1)
             action = int(potential_action.item())
@@ -62,6 +62,7 @@ class QLearner(nn.Module):
             q_value = self.forward(state)
             action = q_value.max(1)[1].view(1, 1)
             action = action.item()
+            '''
             ######## YOUR CODE HERE! ########
         else:
             action = random.randrange(self.env.action_space.n)
@@ -74,12 +75,12 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
     next_state = Variable(torch.FloatTensor(np.float32(next_state)), requires_grad=True)
     action = Variable(torch.LongTensor(action))
     reward = Variable(torch.FloatTensor(reward))
-    done = Variable(torch.FloatTensor(done))
-    #done = Variable(torch.ByteTensor(done))
+    #done = Variable(torch.FloatTensor(done))
+    done = Variable(torch.ByteTensor(done))
     
     ######## YOUR CODE HERE! ########
     # TODO: Implement the Temporal Difference Loss
-    '''
+    
     current_q_value = model(state).gather(1, action.long().unsqueeze(-1).squeeze(-1))
     next_q_value = model(next_state).max(dim=1)[0]
     next_q_value[done] = 0.0
@@ -96,7 +97,7 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
     
     
     loss = nn.MSELoss()(current_q_value, expected_q_value)
-    
+    '''
     ######## YOUR CODE HERE! ########
     return loss
 
