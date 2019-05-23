@@ -54,9 +54,14 @@ class QLearner(nn.Module):
             ######## YOUR CODE HERE! ########
             # TODO: Given state, you should write code to get the Q value and chosen action
             # Complete the R.H.S. of the following 2 lines and uncomment them
+            '''
             q_value = self.forward(state)
             _, potential_action = torch.max(q_value, dim=1)
             action = int(potential_action.item())
+            '''
+            q_value = self.forward(state)
+            action = q_value.max(1)[1].view(1, 1)
+            action = action.item()
             ######## YOUR CODE HERE! ########
         else:
             action = random.randrange(self.env.action_space.n)
@@ -116,8 +121,8 @@ class ReplayBuffer(object):
         ######## YOUR CODE HERE! ########
         transitions = random.sample(self.buffer, batch_size)
         state, action, reward, next_state, done = zip(*transitions)
-        #return np.concatenate(state), action, reward, np.concatenate(next_state), done
-        return state, action, reward, next_state, done
+        return np.concatenate(state), action, reward, np.concatenate(next_state), done
+        #return state, action, reward, next_state, done
 
     def __len__(self):
         return len(self.buffer)
