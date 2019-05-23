@@ -81,7 +81,7 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
     ######## YOUR CODE HERE! ########
     # TODO: Implement the Temporal Difference Loss
     
-    current_q_value = model(state).gather(1, action.long().unsqueeze(-1).squeeze(-1))
+    current_q_value = model(state).gather(1, action.long().unsqueeze(-1)).squeeze(-1)
     next_q_value = model(next_state).max(dim=1)[0]
     next_q_value[done] = 0.0
     next_q_value = next_q_value.detach()
