@@ -41,6 +41,9 @@ losses = []
 all_rewards = []
 episode_reward = 0
 
+loss_list = []
+reward_list = []
+
 state = env.reset()
 
 
@@ -66,7 +69,7 @@ for frame_idx in range(1, num_frames + 1):
         loss.backward()
         optimizer.step()
         losses.append(loss.data.cpu().numpy())
-
+        
     if frame_idx % 10000 == 0 and len(replay_buffer) <= replay_initial:
         print('#Frame: %d, preparing replay buffer' % frame_idx)
 
@@ -74,8 +77,10 @@ for frame_idx in range(1, num_frames + 1):
         print('#Frame: %d, Loss: %f' % (frame_idx, np.mean(losses)))
         print('Last-10 average reward: %f' % np.mean(all_rewards[-10:]))
     
+        loss_list.append(np.mean(losses)) 
+        reward_list.append(np.mean(all_rewards[-10:]))
     
-    sio.savemat('Results.mat', {'all_rewards':all_rewards, 'losses': losses})
+        sio.savemat('Results.mat', {'reward_list':reward_list, 'loss_list':loss_list})
     
         
       

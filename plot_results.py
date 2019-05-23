@@ -18,12 +18,12 @@ R = np.array([])
 L = np.array([])
 if op.isfile('Results.mat'):
     loadData = sio.loadmat('Results.mat')
-    R = loadData['all_rewards']
+    R = loadData['reward_list']
     R.shape = (-1, 1)
-    L = loadData['losses']
+    L = loadData['loss_list']
     L.shape = (-1, 1)
 
-t = np.arange(1, R.szie + 1, 1)
+t = np.arange(1, R.size + 1, 1)
 
 fig, ax1 = plt.subplots()
 color = 'tab:red'
