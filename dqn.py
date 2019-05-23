@@ -55,8 +55,8 @@ class QLearner(nn.Module):
             # TODO: Given state, you should write code to get the Q value and chosen action
             # Complete the R.H.S. of the following 2 lines and uncomment them
             q_value = self.forward(state)
-            action = q_value.max(1)[1].view(1, 1)
-            #action = action.item()
+            _, potential_action = torch.max(q_value, dim=1)
+            action = int(potential_action.item())
             ######## YOUR CODE HERE! ########
         else:
             action = random.randrange(self.env.action_space.n)
@@ -70,37 +70,30 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
     action = Variable(torch.LongTensor(action))
     reward = Variable(torch.FloatTensor(reward))
     done = Variable(torch.FloatTensor(done))
+    #done = Variable(torch.ByteTensor(done))
     
     ######## YOUR CODE HERE! ########
     # TODO: Implement the Temporal Difference Loss
     '''
-    non_final_mask = Variable(torch.ByteTensor(np.uint8(tuple(map(lambda s: s is not None, next_state)))))
-    #non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, next_state)), device=self.device, dtype=torch.uint8)
-    try: #sometimes all next states are false
-        non_final_next_states = Variable(torch.FloatTensor(np.float32([s for s in next_state if s is not None])))
-        #non_final_next_states = torch.tensor([s for s in next_state if s is not None], device=self.device, dtype=torch.float).view(shape)
-        empty_next_state_values = False
-    except:
-        non_final_next_states = None
-        empty_next_state_values = True
-    '''
-    current_q_value = model(state).gather(1, action.view(-1, 1))
-    #max_next_action = model(next_state).max(dim=1)[1].view(-1, 1)
-    expected_q_value = reward + (gamma * model(next_state).gather(1, action.view(-1, 1))) * (1 - done)
+    current_q_value = model(state).gather(1, action.long().unsqueeze(-1).squeeze(-1))
+    next_q_value = model(next_state).max(dim=1)[0]
+    next_q_value[done] = 0.0
+    next_q_value = next_q_value.detach()
+    
+    expected_q_value = reward + gamma * next_q_value
+    
+    loss = nn.MSELoss()(current_q_value, expected_q_value)
     
     '''
-    #target
-    with torch.no_grad():
-        max_next_q_value = Variable(torch.zeros(batch_size, dtype=torch.float)).unsqueeze(dim=1)
-        #max_next_q_value = torch.zeros(batch_size, device=self.device, dtype=torch.float).unsqueeze(dim=1)
-        if not empty_next_state_values:
-            max_next_action = model(non_final_next_states).max(dim=1)[1].view(-1, 1)
-            max_next_q_value[non_final_mask] = model(non_final_next_states).gather(1, max_next_action)
-        expected_q_values = reward + (gamma * max_next_q_value)
-    '''
+    current_q_value = model(state).gather(1, action.view(-1, 1))
+    max_next_action = model(next_state).max(dim=1)[1].view(-1, 1)
+    expected_q_value = reward + (gamma * model(next_state).gather(1, max_next_action)) * (1 - done)
+    
+    
     err = (expected_q_value - current_q_value)
     
     loss = torch.mean(err**2)
+    
     ######## YOUR CODE HERE! ########
     return loss
 
@@ -123,7 +116,8 @@ class ReplayBuffer(object):
         ######## YOUR CODE HERE! ########
         transitions = random.sample(self.buffer, batch_size)
         state, action, reward, next_state, done = zip(*transitions)
-        return np.concatenate(state), action, reward, np.concatenate(next_state), done
+        #return np.concatenate(state), action, reward, np.concatenate(next_state), done
+        return state, action, reward, next_state, done
 
     def __len__(self):
         return len(self.buffer)
