@@ -95,9 +95,7 @@ def compute_td_loss(model, batch_size, gamma, replay_buffer):
     expected_q_value = reward + (gamma * model(next_state).gather(1, max_next_action)) * (1 - done)
     
     
-    err = (expected_q_value - current_q_value)
-    
-    loss = torch.mean(err**2)
+    loss = nn.MSELoss()(current_q_value, expected_q_value)
     
     ######## YOUR CODE HERE! ########
     return loss
