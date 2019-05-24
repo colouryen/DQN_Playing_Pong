@@ -28,11 +28,11 @@ class QLearner(nn.Module):
             nn.Conv2d(64, 64, kernel_size=3, stride=1),
             nn.ReLU()
         )
-        '''
+        
         self.fc_temp = nn.Sequential(
             nn.Linear(self.feature_size(), 512)
         )
-        '''
+        
         self.fc = nn.Sequential(
             nn.Linear(self.feature_size(), 512),
             nn.ReLU(),
@@ -43,7 +43,17 @@ class QLearner(nn.Module):
         x = self.features(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
+        
         return x
+    
+    def get_hidden_layer(self, state):
+        state = Variable(torch.FloatTensor(np.float32(state)).unsqueeze(0), requires_grad=True)
+        
+        y = self.features(state)
+        y = y.view(y.size(0), -1)
+        y = self.fc_temp(y)
+        
+        return y
     
     def feature_size(self):
             return self.features(autograd.Variable(torch.zeros(1, *self.input_shape))).view(1, -1).size(1)

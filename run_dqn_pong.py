@@ -46,11 +46,31 @@ reward_list = []
 
 state = env.reset()
 
+frame_list = random.sample(range(1, num_frames), 1000)
+frame_list.sort()
+action_list = []
+hiddenLayers = []
+rand_frame_count = 0
 
 for frame_idx in range(1, num_frames + 1):
 
     epsilon = epsilon_by_frame(frame_idx)
     action = model.act(state, epsilon)
+    
+    if frame_list[rand_frame_count] == frame_idx:
+        hiddenTensor = model.get_hidden_layer(state)
+        temp = hiddenTensor.data.cpu().numpy()
+        hiddenLayers.append(temp[0])
+        #hiddenLayers.append(hiddenTensor.data.cpu().numpy())
+        #hiddenLayers = np.concatenate((hiddenLayers, hiddenTensor.data.cpu().numpy()), axis=0)
+        
+        action_list.append(action)
+        #env.env.ale.saveScreenPNG('test_image.png')
+        
+        if rand_frame_count < 999:
+            rand_frame_count += 1
+    
+    
     
     next_state, reward, done, _ = env.step(action)
     replay_buffer.push(state, action, reward, next_state, done)
@@ -80,7 +100,7 @@ for frame_idx in range(1, num_frames + 1):
         loss_list.append(np.mean(losses)) 
         reward_list.append(np.mean(all_rewards[-10:]))
     
-        sio.savemat('Results.mat', {'reward_list':reward_list, 'loss_list':loss_list})
-    
-        
-      
+sio.savemat('Results.mat', {'reward_list':reward_list, 'loss_list':loss_list, 'hiddenLayers':hiddenLayers, 'action_list':action_list})
+
+
+
