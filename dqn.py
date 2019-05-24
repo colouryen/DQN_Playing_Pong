@@ -34,7 +34,6 @@ class QLearner(nn.Module):
         )
         
         self.fc = nn.Sequential(
-            nn.Linear(self.feature_size(), 512),
             nn.ReLU(),
             nn.Linear(512, self.num_actions)
         )
@@ -42,6 +41,7 @@ class QLearner(nn.Module):
     def forward(self, x):
         x = self.features(x)
         x = x.view(x.size(0), -1)
+        x = self.fc_temp(x) 
         x = self.fc(x)
         
         return x

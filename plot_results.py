@@ -16,11 +16,17 @@ from sklearn.manifold import TSNE
 
 import matplotlib.patheffects as PathEffects
 import seaborn as sns
-sns.set_style('darkgrid')
-sns.set_palette('muted')
-sns.set_context("notebook", font_scale=1.5, rc={"lines.linewidth": 2.5})
-RS = 123
+#sns.set_style('darkgrid')
+#sns.set_palette('muted')
+#sns.set_context("notebook", font_scale=1.5, rc={"lines.linewidth": 2.5})
 
+'''
+import matplotlib as mpl
+#mpl.rcParams.update(mpl.rcParamsDefault)
+
+mpl.rcdefaults()
+plt.rcdefaults()
+'''
 
 ##### Reward Plot #####
 
@@ -28,6 +34,7 @@ R = np.array([])
 L = np.array([])
 hLayers = np.array([])
 a_list = np.array([])
+s_list = np.array([])
 if op.isfile('Results.mat'):
     loadData = sio.loadmat('Results.mat')
     R = loadData['reward_list']
@@ -35,10 +42,12 @@ if op.isfile('Results.mat'):
     L = loadData['loss_list']
     L.shape = (-1, 1)
     hLayers = loadData['hiddenLayers']
-    hLayers.shape = (-1, 1)
+    #hLayers.shape = (-1, 1)
     a_list = loadData['action_list']
-    a_list.shape = (-1, 1)
-    
+    #a_list.shape = (-1, 1)
+    s_list = loadData['state_list']
+
+a_list = a_list[0]    
 #hLayers = np.array(hLayers)
 #a_list = np.array(a_list)
 
@@ -46,7 +55,7 @@ t = np.arange(1, R.size + 1, 1)
 
 fig, ax1 = plt.subplots()
 color = 'tab:red'
-ax1.set_xlabel('episodes')
+ax1.set_xlabel('frames')
 ax1.set_ylabel('Reward', color=color)
 ax1.plot(t, R, color=color)
 ax1.tick_params(axis='y', labelcolor=color)
@@ -61,6 +70,7 @@ ax2.tick_params(axis='y', labelcolor=color)
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 fig.savefig('reward_loss_plot.png', bbox_inches='tight', dpi=300)
 
+
 ##### Data Representation #####
 # choose a color palette with seaborn.
 Layer_embedded = TSNE(n_components=2).fit_transform(hLayers)
@@ -71,10 +81,10 @@ palette = np.array(sns.color_palette("hls", num_classes))
 f = plt.figure(figsize=(8, 8))
 ax = plt.subplot(aspect='equal')
 sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=palette[a_list.astype(np.int)])
-plt.xlim(-25, 25)
-plt.ylim(-25, 25)
-ax.axis('off')
-ax.axis('tight')
+#plt.xlim(-25, 25)
+#plt.ylim(-25, 25)
+#ax.axis('off')
+#ax.axis('tight')
 
 # add the labels for each digit corresponding to the label
 txts = []
