@@ -16,8 +16,6 @@ import scipy.io as sio
 import os.path as op
 import matplotlib.pyplot as plt
 
-from sklearn.manifold import TSNE
-
 env_id = "PongNoFrameskip-v4"
 env = make_atari(env_id)
 env = wrap_deepmind(env)
