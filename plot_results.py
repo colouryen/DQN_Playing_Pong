@@ -70,6 +70,9 @@ ax2.tick_params(axis='y', labelcolor=color)
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 fig.savefig('reward_loss_plot.png', bbox_inches='tight', dpi=300)
 
+plt.figure(1)
+plt.imshow(s_list[900])
+
 
 ##### Data Representation #####
 # choose a color palette with seaborn.

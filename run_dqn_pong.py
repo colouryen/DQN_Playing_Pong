@@ -46,7 +46,7 @@ reward_list = []
 
 state = env.reset()
 
-frame_list = random.sample(range(1, num_frames), 1000)
+frame_list = random.sample(range(1, num_frames - 2000), 1000)
 frame_list.sort()
 action_list = []
 state_list = []
@@ -58,7 +58,7 @@ for frame_idx in range(1, num_frames + 1):
     epsilon = epsilon_by_frame(frame_idx)
     action = model.act(state, epsilon)
     
-    if frame_list[rand_frame_count] == frame_idx:
+    if (frame_list[rand_frame_count] == frame_idx) or (frame_idx > num_frames - 2000):
         state_list.append(state.squeeze(0))
         
         hiddenTensor = model.get_hidden_layer(state)
