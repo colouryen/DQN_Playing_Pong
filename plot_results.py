@@ -28,12 +28,6 @@ import matplotlib as mpl
 mpl.rcdefaults()
 plt.rcdefaults()
 '''
-import random
-frame_list = random.sample(range(1, 100), 10)
-frame_list.sort()
-for i in range(1, 100):
-    if i in frame_list:
-        print(i)
 
 ##### Reward Plot #####
 
@@ -62,7 +56,7 @@ t = np.arange(1, R.size + 1, 1)
 
 fig, ax1 = plt.subplots()
 color = 'tab:red'
-ax1.set_xlabel('frames')
+ax1.set_xlabel('frames x 10^6')
 ax1.set_ylabel('Reward', color=color)
 ax1.plot(t, R, color=color)
 ax1.tick_params(axis='y', labelcolor=color)

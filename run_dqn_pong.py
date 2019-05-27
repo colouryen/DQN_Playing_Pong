@@ -46,33 +46,12 @@ reward_list = []
 
 state = env.reset()
 
-frame_list = random.sample(range(1, num_frames - 2000), 1000)
-frame_list.sort()
-
-hiddenLayers = []
-state_list = []
-action_list = []
-reward_frame_list = []
-frame_order = []
-
 for frame_idx in range(1, num_frames + 1):
 
     epsilon = epsilon_by_frame(frame_idx)
     action = model.act(state, epsilon)
     
     next_state, reward, done, _ = env.step(action)
-    
-    if (frame_idx in frame_list) or (frame_idx > num_frames - 2000):
-        hiddenTensor = model.get_hidden_layer(state)
-        temp = hiddenTensor.data.cpu().numpy()
-        hiddenLayers.append(temp[0])
-        #hiddenLayers.append(hiddenTensor.data.cpu().numpy())
-        #hiddenLayers = np.concatenate((hiddenLayers, hiddenTensor.data.cpu().numpy()), axis=0)
-        state_list.append(state.squeeze(0))
-        action_list.append(action)
-        reward_frame_list.append(reward)
-        frame_order.append(frame_idx)
-        #env.env.ale.saveScreenPNG('test_image.png')
     
     replay_buffer.push(state, action, reward, next_state, done)
     
@@ -102,21 +81,6 @@ for frame_idx in range(1, num_frames + 1):
         reward_list.append(np.mean(all_rewards[-10:]))
 
    
-sio.savemat('Results.mat', {'reward_list':reward_list, 'loss_list':loss_list, 'hiddenLayers':hiddenLayers, 'state_list':state_list, 'action_list':action_list, 'reward_frame_list':reward_frame_list, 'frame_order':frame_order})  
+sio.savemat('Results.mat', {'reward_list':reward_list, 'loss_list':loss_list})
 
-#hiddenLayers = np.array(hiddenLayers)
-#action_list = np.array(action_list)
-
-#Layer_embedded = TSNE(n_components=2).fit_transform(hiddenLayers)
-
-'''
-plt.scatter(Layer_embedded[len(hiddenLayers):,0], Layer_embedded[len(hiddenLayers):,1], marker='.')
-sp = plt.scatter(Layer_embedded[len(hiddenLayers):,0], Layer_embedded[len(hiddenLayers):,1], c=y1)
-#plt.scatter(Layer_embedded[:, 0], Layer_embedded[:, 1], marker="x", cmap=plt.get_cmap('Spectral'))
-plt.legend(prop={'size':6})
-plt.colorbar(sp)
-plt.title('t-SNE embedding hidden layer')
-plt.savefig('t-SNE_hidden_layer.png')
-'''
-
-#fashion_scatter(Layer_embedded, action_list)
+torch.save(model.state_dict(), 'trained_model.pth')
