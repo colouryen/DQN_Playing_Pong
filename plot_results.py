@@ -68,7 +68,7 @@ t = np.arange(1, R.size + 1, 1)
 
 fig, ax1 = plt.subplots()
 color = 'tab:red'
-ax1.set_xlabel('frames x 10^6')
+ax1.set_xlabel('frames x 10^4')
 ax1.set_ylabel('Reward', color=color)
 ax1.plot(t, R, color=color)
 ax1.tick_params(axis='y', labelcolor=color)
@@ -97,16 +97,37 @@ Layer_embedded = TSNE(n_components=2).fit_transform(hLayers[2000:3000,:])
 #Layer_embedded = LocallyLinearEmbedding(n_components=2).fit_transform(hLayers[2000:3000,:])
 #Layer_embedded = Isomap(n_components=2).fit_transform(hLayers[2000:3000,:])
 num_classes = len(np.unique(a_list[2000:3000]))
-palette = np.array(sns.color_palette("hls", num_classes))
+palette = np.array(sns.color_palette("RdBu_r", num_classes))
 
 # create a scatter plot.
 f = plt.figure(figsize=(8, 8))
 ax = plt.subplot(aspect='equal')
 sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=palette[a_list[2000:3000].astype(np.int)])
+#plt.colorbar(sc)
+#plt.show()
+
 #plt.xlim(-25, 25)
 #plt.ylim(-25, 25)
 #ax.axis('off')
 #ax.axis('tight')
+
+my_cmap = plt.cm.get_cmap('RdBu_r')
+
+# create a scatter plot.
+f_2 = plt.figure(figsize=(10, 10))
+ax_2 = plt.subplot(aspect='equal')
+sc_2 = ax_2.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=a_list[2000:3000], cmap=my_cmap)
+plt.colorbar(sc_2)
+plt.show()
+
+my_cmap = sns.light_palette("Navy", as_cmap=True)
+
+colors = a_list[2000:3000]
+f_3 = plt.figure(figsize=(10, 10))
+ax_3 = plt.subplot()
+plt.scatter(Layer_embedded[:,0], Layer_embedded[:,1], c=colors, cmap=my_cmap)
+plt.colorbar()
+plt.show()
 
 # add the labels for each digit corresponding to the label
 txts = []
