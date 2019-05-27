@@ -29,28 +29,40 @@ mpl.rcdefaults()
 plt.rcdefaults()
 '''
 
-##### Reward Plot #####
+##### Load Data #####
 
 R = np.array([])
 L = np.array([])
-hLayers = np.array([])
-a_list = np.array([])
-s_list = np.array([])
 if op.isfile('Results.mat'):
     loadData = sio.loadmat('Results.mat')
+    
     R = loadData['reward_list']
     R.shape = (-1, 1)
     L = loadData['loss_list']
     L.shape = (-1, 1)
+
+all_r = np.array([])
+hLayers = np.array([])
+a_list = np.array([])
+s_list = np.array([])
+reward_frame = np.array([])
+f_order = np.array([])
+if op.isfile('Results_after_training.mat'):
+    loadData = sio.loadmat('Results_after_training.mat')
+    
+    all_r = loadData['all_rewards']
     hLayers = loadData['hiddenLayers']
-    #hLayers.shape = (-1, 1)
     a_list = loadData['action_list']
-    #a_list.shape = (-1, 1)
     s_list = loadData['state_list']
+    reward_frame = loadData['reward_frame_list']
+    f_order = loadData['frame_order']
 
 a_list = a_list[0]    
 #hLayers = np.array(hLayers)
 #a_list = np.array(a_list)
+
+
+##### Plot Reward and Loss #####
 
 t = np.arange(1, R.size + 1, 1)
 

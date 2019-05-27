@@ -93,7 +93,10 @@ for frame_idx in range(1, num_frames + 1):
         state = env.reset()
         all_rewards.append(episode_reward)
         episode_reward = 0
-
+        
+    if frame_idx % 10000 == 0:
+        print('#Frame: %d' % frame_idx)
+              
    
 sio.savemat('Results_after_training.mat', {'all_rewards':all_rewards, 'hiddenLayers':hiddenLayers, 'state_list':state_list, 'action_list':action_list, 'reward_frame_list':reward_frame_list, 'frame_order':frame_order})  
 
