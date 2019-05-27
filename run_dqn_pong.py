@@ -48,33 +48,32 @@ state = env.reset()
 
 frame_list = random.sample(range(1, num_frames - 2000), 1000)
 frame_list.sort()
-action_list = []
-state_list = []
+
 hiddenLayers = []
-rand_frame_count = 0
+state_list = []
+action_list = []
+reward_frame_list = []
+frame_order = []
 
 for frame_idx in range(1, num_frames + 1):
 
     epsilon = epsilon_by_frame(frame_idx)
     action = model.act(state, epsilon)
     
-    if (frame_list[rand_frame_count] == frame_idx) or (frame_idx > num_frames - 2000):
-        state_list.append(state.squeeze(0))
-        
+    next_state, reward, done, _ = env.step(action)
+    
+    if (frame_idx in frame_list) or (frame_idx > num_frames - 2000):
         hiddenTensor = model.get_hidden_layer(state)
         temp = hiddenTensor.data.cpu().numpy()
         hiddenLayers.append(temp[0])
         #hiddenLayers.append(hiddenTensor.data.cpu().numpy())
         #hiddenLayers = np.concatenate((hiddenLayers, hiddenTensor.data.cpu().numpy()), axis=0)
-        
+        state_list.append(state.squeeze(0))
         action_list.append(action)
+        reward_frame_list.append(reward)
+        frame_order.append(frame_idx)
         #env.env.ale.saveScreenPNG('test_image.png')
-        
-        if rand_frame_count < 999:
-            rand_frame_count += 1
     
-    
-    next_state, reward, done, _ = env.step(action)
     replay_buffer.push(state, action, reward, next_state, done)
     
     state = next_state
@@ -103,7 +102,7 @@ for frame_idx in range(1, num_frames + 1):
         reward_list.append(np.mean(all_rewards[-10:]))
 
    
-sio.savemat('Results.mat', {'reward_list':reward_list, 'loss_list':loss_list, 'hiddenLayers':hiddenLayers, 'action_list':action_list, 'state_list':state_list})  
+sio.savemat('Results.mat', {'reward_list':reward_list, 'loss_list':loss_list, 'hiddenLayers':hiddenLayers, 'state_list':state_list, 'action_list':action_list, 'reward_frame_list':reward_frame_list, 'frame_order':frame_order})  
 
 #hiddenLayers = np.array(hiddenLayers)
 #action_list = np.array(action_list)

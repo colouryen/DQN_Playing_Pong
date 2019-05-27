@@ -12,7 +12,8 @@ import scipy.io as sio
 import os.path as op
 import matplotlib.pyplot as plt
 
-from sklearn.manifold import TSNE
+from sklearn.manifold import TSNE, LocallyLinearEmbedding, Isomap
+from sklearn.decomposition import PCA
 
 import matplotlib.patheffects as PathEffects
 import seaborn as sns
@@ -27,6 +28,12 @@ import matplotlib as mpl
 mpl.rcdefaults()
 plt.rcdefaults()
 '''
+import random
+frame_list = random.sample(range(1, 100), 10)
+frame_list.sort()
+for i in range(1, 100):
+    if i in frame_list:
+        print(i)
 
 ##### Reward Plot #####
 
@@ -69,21 +76,27 @@ ax2.tick_params(axis='y', labelcolor=color)
 
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 fig.savefig('reward_loss_plot.png', bbox_inches='tight', dpi=300)
+'''
+##### Show Screen Shots #####
+for i in range(2900, 3000, 1):
+    monitor = plt.subplots()
+    plt.imshow(s_list[i])
 
-plt.figure(1)
-plt.imshow(s_list[900])
-
+'''
 
 ##### Data Representation #####
 # choose a color palette with seaborn.
-Layer_embedded = TSNE(n_components=2).fit_transform(hLayers)
-num_classes = len(np.unique(a_list))
+Layer_embedded = TSNE(n_components=2).fit_transform(hLayers[2000:3000,:])
+#Layer_embedded = PCA(n_components=2).fit_transform(hLayers[2000:3000,:])
+#Layer_embedded = LocallyLinearEmbedding(n_components=2).fit_transform(hLayers[2000:3000,:])
+#Layer_embedded = Isomap(n_components=2).fit_transform(hLayers[2000:3000,:])
+num_classes = len(np.unique(a_list[2000:3000]))
 palette = np.array(sns.color_palette("hls", num_classes))
 
 # create a scatter plot.
 f = plt.figure(figsize=(8, 8))
 ax = plt.subplot(aspect='equal')
-sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=palette[a_list.astype(np.int)])
+sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=palette[a_list[2000:3000].astype(np.int)])
 #plt.xlim(-25, 25)
 #plt.ylim(-25, 25)
 #ax.axis('off')
@@ -96,7 +109,7 @@ for i in range(num_classes):
 
     # Position of each label at median of data points.
 
-    xtext, ytext = np.median(Layer_embedded[a_list == i, :], axis=0)
+    xtext, ytext = np.median(Layer_embedded[a_list[2000:3000] == i, :], axis=0)
     txt = ax.text(xtext, ytext, str(i), fontsize=24)
     txt.set_path_effects([
         PathEffects.Stroke(linewidth=5, foreground="w"),
