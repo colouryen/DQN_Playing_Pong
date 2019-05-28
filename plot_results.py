@@ -12,6 +12,9 @@ import scipy.io as sio
 import os.path as op
 import matplotlib.pyplot as plt
 
+from matplotlib import pyplot
+from mpl_toolkits.mplot3d import Axes3D
+
 from sklearn.manifold import TSNE, LocallyLinearEmbedding, Isomap
 from sklearn.decomposition import PCA
 
@@ -111,41 +114,28 @@ t_hLayers = hLayers[0:1000,:]
 t_a_list = a_list[0:1000]
 
 Layer_embedded = TSNE(n_components=2).fit_transform(t_hLayers)
+Layer_embedded_3d = TSNE(n_components=3).fit_transform(t_hLayers)
 #Layer_embedded = PCA(n_components=2).fit_transform(hLayers[2000:3000,:])
 #Layer_embedded = LocallyLinearEmbedding(n_components=2).fit_transform(hLayers[2000:3000,:])
 #Layer_embedded = Isomap(n_components=2).fit_transform(hLayers[2000:3000,:])
+
 num_classes = len(np.unique(t_a_list))
-palette = np.array(sns.color_palette("RdBu_r", num_classes))
-
-# create a scatter plot.
-f = plt.figure(figsize=(8, 8))
-ax = plt.subplot(aspect='equal')
-sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=palette[t_a_list.astype(np.int)])
-#plt.colorbar(sc)
-#plt.show()
-
-#plt.xlim(-25, 25)
-#plt.ylim(-25, 25)
-#ax.axis('off')
-#ax.axis('tight')
 
 my_cmap = plt.cm.get_cmap('RdBu_r')
 
-# create a scatter plot.
-f_2 = plt.figure(figsize=(10, 10))
-ax_2 = plt.subplot(aspect='equal')
-sc_2 = ax_2.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=t_a_list, cmap=my_cmap)
-plt.colorbar(sc_2)
+##### Create a 2D scatter plot #####
+f = plt.figure(figsize=(10, 10))
+ax = plt.subplot(aspect='equal')
+sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=t_a_list, cmap=my_cmap)
+plt.colorbar(sc)
 plt.show()
 
-my_cmap = sns.light_palette("Navy", as_cmap=True)
-
-colors = t_a_list
-f_3 = plt.figure(figsize=(10, 10))
-ax_3 = plt.subplot()
-plt.scatter(Layer_embedded[:,0], Layer_embedded[:,1], c=colors, cmap=my_cmap)
-plt.colorbar()
-plt.show()
+##### Create a 3D scatter plot #####
+f_3d = pyplot.figure(figsize=(10, 10))
+ax_3d = Axes3D(f_3d)
+sc_3d = ax_3d.scatter(Layer_embedded_3d[:,0], Layer_embedded_3d[:,1], Layer_embedded_3d[:,2], c=t_a_list, cmap=my_cmap)
+pyplot.colorbar(sc_3d)
+pyplot.show()
 
 # add the labels for each digit corresponding to the label
 txts = []
