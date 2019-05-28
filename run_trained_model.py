@@ -64,6 +64,14 @@ action_list = []
 reward_frame_list = []
 frame_order = []
 
+hiddenLayers_20 = []
+state_list_20 = []
+action_list_20 = []
+reward_frame_list_20 = []
+frame_order_20 = []
+
+max_rec = 0
+
 epsilon = -1
 
 for frame_idx in range(1, num_frames + 1):
@@ -76,12 +84,20 @@ for frame_idx in range(1, num_frames + 1):
         hiddenTensor = model.get_hidden_layer(state)
         temp = hiddenTensor.data.cpu().numpy()
         hiddenLayers.append(temp[0])
+        hiddenLayers_20.append(temp[0])
         #hiddenLayers.append(hiddenTensor.data.cpu().numpy())
         #hiddenLayers = np.concatenate((hiddenLayers, hiddenTensor.data.cpu().numpy()), axis=0)
         state_list.append(state.squeeze(0))
+        state_list_20.append(state.squeeze(0))
+        
         action_list.append(action)
+        action_list_20.append(action)
+        
         reward_frame_list.append(reward)
+        reward_frame_list_20.append(reward)
+        
         frame_order.append(frame_idx)
+        frame_order_20.append(frame_idx)
         #env.env.ale.saveScreenPNG('test_image.png')
     
     replay_buffer.push(state, action, reward, next_state, done)
@@ -90,6 +106,17 @@ for frame_idx in range(1, num_frames + 1):
     episode_reward += reward
     
     if done:
+        if episode_reward > max_rec:
+            max_rec = episode_reward
+            sio.savemat('Results_Max_Rec.mat', {'hiddenLayers_20':hiddenLayers_20, 'state_list_20':state_list_20, 'action_list_20':action_list_20, 'reward_frame_list_20':reward_frame_list_20, 'frame_order_20':frame_order_20})  
+        
+        hiddenLayers_20 = []
+        state_list_20 = []
+        action_list_20 = []
+        reward_frame_list_20 = []
+        frame_order_20 = []
+        
+        
         state = env.reset()
         all_rewards.append(episode_reward)
         episode_reward = 0

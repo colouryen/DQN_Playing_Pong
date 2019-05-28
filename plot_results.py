@@ -92,17 +92,17 @@ for i in range(2900, 3000, 1):
 
 ##### Data Representation #####
 # choose a color palette with seaborn.
-Layer_embedded = TSNE(n_components=2).fit_transform(hLayers[2000:3000,:])
+Layer_embedded = TSNE(n_components=2).fit_transform(hLayers[0:1000,:])
 #Layer_embedded = PCA(n_components=2).fit_transform(hLayers[2000:3000,:])
 #Layer_embedded = LocallyLinearEmbedding(n_components=2).fit_transform(hLayers[2000:3000,:])
 #Layer_embedded = Isomap(n_components=2).fit_transform(hLayers[2000:3000,:])
-num_classes = len(np.unique(a_list[2000:3000]))
+num_classes = len(np.unique(a_list[0:1000]))
 palette = np.array(sns.color_palette("RdBu_r", num_classes))
 
 # create a scatter plot.
 f = plt.figure(figsize=(8, 8))
 ax = plt.subplot(aspect='equal')
-sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=palette[a_list[2000:3000].astype(np.int)])
+sc = ax.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=palette[a_list[0:1000].astype(np.int)])
 #plt.colorbar(sc)
 #plt.show()
 
@@ -116,13 +116,13 @@ my_cmap = plt.cm.get_cmap('RdBu_r')
 # create a scatter plot.
 f_2 = plt.figure(figsize=(10, 10))
 ax_2 = plt.subplot(aspect='equal')
-sc_2 = ax_2.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=a_list[2000:3000], cmap=my_cmap)
+sc_2 = ax_2.scatter(Layer_embedded[:,0], Layer_embedded[:,1], lw=0, s=40, c=a_list[0:1000], cmap=my_cmap)
 plt.colorbar(sc_2)
 plt.show()
 
 my_cmap = sns.light_palette("Navy", as_cmap=True)
 
-colors = a_list[2000:3000]
+colors = a_list[0:1000]
 f_3 = plt.figure(figsize=(10, 10))
 ax_3 = plt.subplot()
 plt.scatter(Layer_embedded[:,0], Layer_embedded[:,1], c=colors, cmap=my_cmap)
