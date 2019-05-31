@@ -55,13 +55,14 @@ reward_list = []
 
 state = env.reset()
 
-frame_list = random.sample(range(1, num_frames - 2000), 10000)
+frame_list = random.sample(range(2000, num_frames), 8000)
 frame_list.sort()
 
 hiddenLayers = []
 state_list = []
 action_list = []
 reward_frame_list = []
+accumulated_reward = [] #####
 frame_order = []
 
 epsilon = -1
@@ -72,7 +73,7 @@ for frame_idx in range(1, num_frames + 1):
     
     next_state, reward, done, _ = env.step(action)
     
-    if (frame_idx in frame_list) or (frame_idx > num_frames - 2000):
+    if (frame_idx in frame_list) or (frame_idx < 2000):
         hiddenTensor = model.get_hidden_layer(state)
         temp = hiddenTensor.data.cpu().numpy()
         hiddenLayers.append(temp[0])
@@ -81,6 +82,7 @@ for frame_idx in range(1, num_frames + 1):
         state_list.append(state.squeeze(0))
         action_list.append(action)
         reward_frame_list.append(reward)
+        accumulated_reward.append(episode_reward) #####
         frame_order.append(frame_idx)
         #env.env.ale.saveScreenPNG('test_image.png')
     
@@ -98,7 +100,7 @@ for frame_idx in range(1, num_frames + 1):
         print('#Frame: %d' % frame_idx)
               
    
-sio.savemat('Results_after_training.mat', {'all_rewards':all_rewards, 'hiddenLayers':hiddenLayers, 'state_list':state_list, 'action_list':action_list, 'reward_frame_list':reward_frame_list, 'frame_order':frame_order})  
+sio.savemat('Results_after_training.mat', {'all_rewards':all_rewards, 'hiddenLayers':hiddenLayers, 'state_list':state_list, 'action_list':action_list, 'reward_frame_list':reward_frame_list, 'accumulated_reward':accumulated_reward, 'frame_order':frame_order})  
 
 #hiddenLayers = np.array(hiddenLayers)
 #action_list = np.array(action_list)
